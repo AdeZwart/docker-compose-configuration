@@ -1,0 +1,101 @@
+version: '3'
+services:
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce
+    volumes:
+      - /home/pi/docker-volumes/portainer:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: always
+    ports:
+     - 9000:9000
+     - 8000:8000
+
+  home-assistant:
+    container_name: home-assistant
+    image: homeassistant/raspberrypi3-homeassistant:stable
+    volumes:
+      - /home/pi/docker-volumes/homeassistant:/config
+      #- /hope/pi/docker-volumes/ha-openssl/openssl.cnf:/etc/ssl/openssl.cnf
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/letsencrypt:/certs
+    restart: always
+    ports:
+      - 8123:8123
+    devices:
+      - /dev/ttyUSB0:/dev/ttyUSB0
+    network_mode: host
+    privileged: true
+ 
+  swag:
+    container_name: swag
+    image: linuxserver/swag
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /home/pi/docker-volumes/secure-web-application-gateway:/config
+    environment:
+      - PGID=1000
+      - PUID=1000
+      - EMAIL=$SWAG_ENV_EMAIL
+      - URL=$SWAG_ENV_URL
+      - SUBDOMAINS=$SWAG_ENV_SUBDOMAINS
+      - VALIDATION=http
+      - TZ=Europe/Amsterdam
+    ports:
+      - 8080:80
+      - 8443:443
+
+  influxdb:
+    container_name: influxdb
+    image: influxdb
+    restart: always
+    ports:
+      - 8086:8086
+    volumes:
+      - /home/pi/docker-volumes/influxdb:/var/lib/influxdb
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana
+    user: "1000"
+    restart: always
+    ports:
+      - 3000:3000
+    volumes:
+      - /home/pi/docker-volumes/grafana:/var/lib/grafana
+
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    restart: always
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "67:67/udp"
+      - "80:80/tcp"
+      - "443:443/tcp"
+    environment:
+      TZ: 'Europe/Amsterdam'
+      WEBPASSWORD: $PI_HOLE_ENV_WEBPASSWORD
+    volumes:
+      - /home/pi/docker-volumes/pihole/pihole:/etc/pihole
+      - /home/pi/docker-volumes/pihole/dnsmasq:/etc/dnsmasq.d
+    dns:
+      - 127.0.0.1
+      - 8.8.8.8
+
+  mosquitto:
+    container_name: mosquitto
+    image: eclipse-mosquitto
+    restart: always
+    volumes:
+      - /home/pi/docker-volumes/mosquitto/config:/mosquitto/config
+      - /home/pi/docker-volumes/mosquitto/data:/mosquitto/data
+      - /home/pi/docker-volumes/mosquitto/log:/mosquitto/log
+    ports:
+      - 1883:1883
+      - 9001:9001
