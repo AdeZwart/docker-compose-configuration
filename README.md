@@ -14,3 +14,5 @@ My docker compose file showing the containers I have running in my home automati
   * Image: grafana/grafana
 * Pi-Hole
   * Image: pihole/pihole:latest
+* Mosquitto
+  * Image: eclipse-mosquitto
