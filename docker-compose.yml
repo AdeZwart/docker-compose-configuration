@@ -25,6 +25,7 @@ services:
       - 8123:8123
     devices:
       - /dev/ttyUSB0:/dev/ttyUSB0
+      - /dev/ttyUSB1:/dev/ttyUSB1
     network_mode: host
     privileged: true
  
