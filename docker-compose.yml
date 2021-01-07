@@ -16,10 +16,10 @@ services:
     image: homeassistant/raspberrypi3-homeassistant:stable
     volumes:
       - /home/pi/docker-volumes/homeassistant:/config
-      #- /hope/pi/docker-volumes/ha-openssl/openssl.cnf:/etc/ssl/openssl.cnf
       - /var/run/docker.sock:/var/run/docker.sock
       - /etc/localtime:/etc/localtime:ro
       - /etc/letsencrypt:/certs
+      - /home/pi/docker-volumes/ha-openssl/openssl.cnf:/etc/ssl/openssl.cnf
     restart: always
     ports:
       - 8123:8123
