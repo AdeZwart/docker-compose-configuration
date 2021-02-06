@@ -100,3 +100,14 @@ services:
     ports:
       - 1883:1883
       - 9001:9001
+
+  zigbee2mqtt:
+    container_name: Zigbee2MQTT
+    image: koenkk/zigbee2mqtt
+    network_mode: host
+    devices:
+      - /dev/ttyACM0:/dev/ttyACM0
+    restart: always
+    volumes:
+      - /home/pi/docker-volumes/zigbee2mqtt/data:/app/data
+      - /etc/localtime:/etc/locatime:ro
