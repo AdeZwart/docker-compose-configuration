@@ -52,7 +52,7 @@ services:
 
   influxdb:
     container_name: influxdb
-    image: influxdb
+    image: influxdb:1.8.4
     restart: always
     ports:
       - 8086:8086
