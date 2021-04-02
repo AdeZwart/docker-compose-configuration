@@ -18,3 +18,5 @@ My docker compose file showing the containers I have running in my home automati
   * Image: eclipse-mosquitto
 * Zigbee2MQTT
   * Image: koenkk/zigbee2mqtt
+* Zigbee2MQTTAssistant
+  * Image: carldebilly/zigbee2mqttassistant
