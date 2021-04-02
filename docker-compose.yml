@@ -56,6 +56,8 @@ services:
     restart: always
     ports:
       - 8086:8086
+    environment:
+      - INFLUXDB_MONITOR-STORE-ENABLED=FALSE
     volumes:
       - /home/pi/docker-volumes/influxdb:/var/lib/influxdb
 
@@ -80,8 +82,8 @@ services:
       - "80:80/tcp"
       - "443:443/tcp"
     environment:
-      TZ: 'Europe/Amsterdam'
-      WEBPASSWORD: $PI_HOLE_ENV_WEBPASSWORD
+      - TZ=Europe/Amsterdam
+      - WEBPASSWORD=$PI_HOLE_ENV_WEBPASSWORD
     volumes:
       - /home/pi/docker-volumes/pihole/pihole:/etc/pihole
       - /home/pi/docker-volumes/pihole/dnsmasq:/etc/dnsmasq.d
@@ -111,3 +113,15 @@ services:
     volumes:
       - /home/pi/docker-volumes/zigbee2mqtt/data:/app/data
       - /etc/localtime:/etc/locatime:ro
+
+  zigbee2mqttassistant:
+    container_name: Zigbee2MQTTAssistant
+    image: carldebilly/zigbee2mqttassistant
+    restart: always
+    environment:
+      - Z2MA_SETTINGS__MQTTSERVER=192.168.2.101
+      - Z2MA_SETTINGS__MQTTUSERNAME=$MQTT_ENV_USERNAME
+      - Z2MA_SETTINGS__MQTTPASSWORD=$MQTT_ENV_PASSWORD
+      - TZ=Europe/Amsterdam
+    ports:
+      - 8880:80
