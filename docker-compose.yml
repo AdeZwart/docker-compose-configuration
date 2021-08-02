@@ -116,15 +116,3 @@ services:
     volumes:
       - /home/pi/docker-volumes/zigbee2mqtt/data:/app/data
       - /etc/localtime:/etc/locatime:ro
-
-  zigbee2mqttassistant:
-    container_name: Zigbee2MQTTAssistant
-    image: carldebilly/zigbee2mqttassistant
-    restart: always
-    environment:
-      - Z2MA_SETTINGS__MQTTSERVER=192.168.2.101
-      - Z2MA_SETTINGS__MQTTUSERNAME=$MQTT_ENV_USERNAME
-      - Z2MA_SETTINGS__MQTTPASSWORD=$MQTT_ENV_PASSWORD
-      - TZ=Europe/Amsterdam
-    ports:
-      - 8880:80
