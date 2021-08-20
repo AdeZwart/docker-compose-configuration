@@ -63,8 +63,8 @@ services:
         - PUID=1000
         - PGID=1000
         - TZ=Europe/Amsterdam
-        - SUBDOMAINS=$SWAG_ENV_SUBDOMAINS
-        - TOKEN=$DUCKDNS_TOKEN
+        - SUBDOMAINS=$DUCKDNS_ENV_SUBDOMAINS
+        - TOKEN=$DUCKDNS_ENV_TOKEN
 
   influxdb:
     container_name: influxdb
