@@ -31,7 +31,7 @@ services:
  
   swag:
     container_name: swag
-    image: linuxserver/swag
+    image: ghcr.io/linuxserver/swag
     cap_add:
       - NET_ADMIN
     restart: unless-stopped
@@ -42,8 +42,8 @@ services:
       - PGID=1000
       - PUID=1000
       - EMAIL=$SWAG_ENV_EMAIL
-      - URL=$SWAG_ENV_URL
-      - SUBDOMAINS=$SWAG_ENV_SUBDOMAINS
+      - URL=$DUCKDNS_ENV_URL
+      - SUBDOMAINS=$DUCKDNS_ENV_SUBDOMAINS
       - VALIDATION=http
       - TZ=Europe/Amsterdam
     ports:
@@ -52,6 +52,19 @@ services:
     networks:
       default:
         ipv4_address: 172.18.0.5
+
+  duckdns:
+      container_name: duckdns
+      image: ghcr.io/linuxserver/duckdns
+      restart: unless-stopped
+      volumes:
+        - /home/pi/docker-volumes/duckdns/config:/config 
+      environment:
+        - PUID=1000
+        - PGID=1000
+        - TZ=Europe/Amsterdam
+        - SUBDOMAINS=$SWAG_ENV_SUBDOMAINS
+        - TOKEN=$DUCKDNS_TOKEN
 
   influxdb:
     container_name: influxdb
