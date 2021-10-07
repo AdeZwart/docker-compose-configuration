@@ -10,10 +10,6 @@ My docker compose file showing the containers I have running in my home automati
   * Image: ghcr.io/linuxserver/swag
 * Duck DNS
   * Image: ghcr.io/linuxserver/duckdns
-* Influx DB
-  * Image: influxdb
-* Grafana
-  * Image: grafana/grafana
 * Pi-Hole
   * Image: pihole/pihole:latest
 * Mosquitto

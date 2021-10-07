@@ -3,6 +3,8 @@ services:
   portainer:
     container_name: portainer
     image: portainer/portainer-ce
+    depends_on:
+      - swag
     volumes:
       - /home/pi/docker-volumes/portainer:/data
       - /var/run/docker.sock:/var/run/docker.sock
@@ -14,6 +16,8 @@ services:
   home-assistant:
     container_name: home-assistant
     image: homeassistant/raspberrypi3-homeassistant:stable
+    depends_on:
+      - swag
     volumes:
       - /home/pi/docker-volumes/homeassistant:/config
       - /var/run/docker.sock:/var/run/docker.sock
@@ -56,6 +60,8 @@ services:
   duckdns:
       container_name: duckdns
       image: ghcr.io/linuxserver/duckdns
+      depends_on:
+      - swag
       restart: unless-stopped
       volumes:
         - /home/pi/docker-volumes/duckdns/config:/config 
@@ -66,30 +72,11 @@ services:
         - SUBDOMAINS=$DUCKDNS_ENV_SUBDOMAINS
         - TOKEN=$DUCKDNS_ENV_TOKEN
 
-  influxdb:
-    container_name: influxdb
-    image: influxdb:1.8.4
-    restart: always
-    ports:
-      - 8086:8086
-    environment:
-      - INFLUXDB_MONITOR-STORE-ENABLED=FALSE
-    volumes:
-      - /home/pi/docker-volumes/influxdb:/var/lib/influxdb
-
-  grafana:
-    container_name: grafana
-    image: grafana/grafana
-    user: "1000"
-    restart: always
-    ports:
-      - 3000:3000
-    volumes:
-      - /home/pi/docker-volumes/grafana:/var/lib/grafana
-
   pihole:
     container_name: pihole
     image: pihole/pihole:latest
+    depends_on:
+      - swag
     restart: always
     ports:
       - "53:53/tcp"
@@ -110,6 +97,8 @@ services:
   mosquitto:
     container_name: mosquitto
     image: eclipse-mosquitto
+    depends_on:
+      - swag
     restart: always
     volumes:
       - /home/pi/docker-volumes/mosquitto/config:/mosquitto/config
@@ -122,6 +111,8 @@ services:
   zigbee2mqtt:
     container_name: Zigbee2MQTT
     image: koenkk/zigbee2mqtt
+    depends_on:
+      - swag
     network_mode: host
     devices:
       - /dev/ttyACM0:/dev/ttyACM0
