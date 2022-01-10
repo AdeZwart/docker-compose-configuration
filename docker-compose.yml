@@ -6,7 +6,7 @@ services:
     depends_on:
       - swag
     volumes:
-      - /home/pi/docker-volumes/portainer:/data
+      - /home/adez/docker-volumes/portainer:/data
       - /var/run/docker.sock:/var/run/docker.sock
     restart: always
     ports:
@@ -15,23 +15,22 @@ services:
 
   home-assistant:
     container_name: home-assistant
-    image: homeassistant/raspberrypi3-homeassistant:stable
+    image: homeassistant/home-assistant:2021.12
     depends_on:
       - swag
     volumes:
-      - /home/pi/docker-volumes/homeassistant:/config
+      - /home/adez/docker-volumes/homeassistant:/config
       - /var/run/docker.sock:/var/run/docker.sock
       - /etc/localtime:/etc/localtime:ro
       - /etc/letsencrypt:/certs
-      - /home/pi/docker-volumes/ha-openssl/openssl.cnf:/etc/ssl/openssl.cnf
+      - /home/adez/docker-volumes/ha-openssl/openssl.cnf:/etc/ssl/openssl.cnf
     restart: always
     ports:
       - 8123:8123
+      - 4199:4199
     devices:
       - /dev/ttyUSB0:/dev/ttyUSB0
       - /dev/ttyUSB1:/dev/ttyUSB1
-    network_mode: host
-    privileged: true
  
   swag:
     container_name: swag
@@ -41,7 +40,7 @@ services:
     restart: unless-stopped
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /home/pi/docker-volumes/secure-web-application-gateway:/config
+      - /home/adez/docker-volumes/secure-web-application-gateway:/config
     environment:
       - PGID=1000
       - PUID=1000
@@ -53,9 +52,6 @@ services:
     ports:
       - 8080:80
       - 8443:443
-    networks:
-      default:
-        ipv4_address: 172.18.0.5
 
   duckdns:
       container_name: duckdns
@@ -64,7 +60,7 @@ services:
       - swag
       restart: unless-stopped
       volumes:
-        - /home/pi/docker-volumes/duckdns/config:/config 
+        - /home/adez/docker-volumes/duckdns/config:/config 
       environment:
         - PUID=1000
         - PGID=1000
@@ -72,27 +68,27 @@ services:
         - SUBDOMAINS=$DUCKDNS_ENV_SUBDOMAINS
         - TOKEN=$DUCKDNS_ENV_TOKEN
 
-  pihole:
-    container_name: pihole
-    image: pihole/pihole:latest
-    depends_on:
-      - swag
-    restart: always
-    ports:
-      - "53:53/tcp"
-      - "53:53/udp"
-      - "67:67/udp"
-      - "80:80/tcp"
-      - "443:443/tcp"
-    environment:
-      - TZ=Europe/Amsterdam
-      - WEBPASSWORD=$PI_HOLE_ENV_WEBPASSWORD
-    volumes:
-      - /home/pi/docker-volumes/pihole/pihole:/etc/pihole
-      - /home/pi/docker-volumes/pihole/dnsmasq:/etc/dnsmasq.d
-    dns:
-      - 127.0.0.1
-      - 8.8.8.8
+  # pihole:
+  #   container_name: pihole
+  #   image: pihole/pihole:latest
+  #   depends_on:
+  #     - swag
+  #   restart: always
+  #   ports:
+  #     - "53:53/tcp"
+  #     - "53:53/udp"
+  #     - "67:67/udp"
+  #     - "80:80/tcp"
+  #     - "443:443/tcp"
+  #   environment:
+  #     - TZ=Europe/Amsterdam
+  #     - WEBPASSWORD=$PI_HOLE_ENV_WEBPASSWORD
+  #   volumes:
+  #     - /home/adez/docker-volumes/pihole/pihole:/etc/pihole
+  #     - /home/adez/docker-volumes/pihole/dnsmasq:/etc/dnsmasq.d
+  #   dns:
+  #     - 127.0.0.1
+  #     - 8.8.8.8
 
   mosquitto:
     container_name: mosquitto
@@ -101,9 +97,9 @@ services:
       - swag
     restart: always
     volumes:
-      - /home/pi/docker-volumes/mosquitto/config:/mosquitto/config
-      - /home/pi/docker-volumes/mosquitto/data:/mosquitto/data
-      - /home/pi/docker-volumes/mosquitto/log:/mosquitto/log
+      - /home/adez/docker-volumes/mosquitto/config:/mosquitto/config
+      - /home/adez/docker-volumes/mosquitto/data:/mosquitto/data
+      - /home/adez/docker-volumes/mosquitto/log:/mosquitto/log
     ports:
       - 1883:1883
       - 9001:9001
@@ -118,5 +114,5 @@ services:
       - /dev/ttyACM0:/dev/ttyACM0
     restart: always
     volumes:
-      - /home/pi/docker-volumes/zigbee2mqtt/data:/app/data
+      - /home/adez/docker-volumes/zigbee2mqtt/data:/app/data
       - /etc/localtime:/etc/locatime:ro
