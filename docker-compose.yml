@@ -29,8 +29,8 @@ services:
       - 8123:8123
       - 4199:4199
     devices:
-      - /dev/ttyUSB0:/dev/ttyUSB0
-      - /dev/ttyUSB1:/dev/ttyUSB1
+      - /dev/ttyUSB0:/dev/ttyUSB1
+      - /dev/ttyUSB1:/dev/ttyUSB0
  
   swag:
     container_name: swag
@@ -116,3 +116,26 @@ services:
     volumes:
       - /home/adez/docker-volumes/zigbee2mqtt/data:/app/data
       - /etc/localtime:/etc/locatime:ro
+
+  wireguard:
+    container_name: wireguard
+    image: lscr.io/linuxserver/wireguard
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Amsterdam
+      - SERVERURL=$WIREGUARD_ENV_URL
+      - SERVERPORT=$WIREGUARD_ENV_SERVER_PORT
+      - PEERS=laptop,phone
+      - PEERDNS=auto       
+    volumes:
+      - /home/adez/docker-volumes/wireguard/config:/config
+      - /lib/modules:/lib/modules
+    ports:
+      - 51820:51820/udp
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+    restart: always
