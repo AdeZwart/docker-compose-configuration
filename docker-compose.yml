@@ -15,7 +15,7 @@ services:
 
   home-assistant:
     container_name: home-assistant
-    image: homeassistant/home-assistant:2021.12
+    image: homeassistant/home-assistant:latest
     depends_on:
       - swag
     volumes:
