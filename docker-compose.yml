@@ -29,8 +29,8 @@ services:
       - 8123:8123
       - 4199:4199
     devices:
-      - /dev/ttyUSB0:/dev/ttyUSB1
-      - /dev/ttyUSB1:/dev/ttyUSB0
+      - /dev/serial/by-id/usb-RFXCOM_RFXtrx433XL_DO4GXDGW-if00-port0:/dev/ttyUSB1
+      - /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_AQ4MI444-if00-port0:/dev/ttyUSB0
  
   swag:
     container_name: swag
@@ -111,7 +111,7 @@ services:
       - swag
     network_mode: host
     devices:
-      - /dev/ttyACM0:/dev/ttyACM0
+      - /dev/serial/by-id/usb-ITead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_662fa977371aec11968876e5f01c6278-if00-port0:/dev/ttyACM0
     restart: always
     volumes:
       - /home/adez/docker-volumes/zigbee2mqtt/data:/app/data
