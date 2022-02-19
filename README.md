@@ -16,3 +16,5 @@ My docker compose file showing the containers I have running in my home automati
   * Image: eclipse-mosquitto
 * Zigbee2MQTT
   * Image: koenkk/zigbee2mqtt
+* Wireguard
+  * Image: lscr.io/linuxserver/wireguard
