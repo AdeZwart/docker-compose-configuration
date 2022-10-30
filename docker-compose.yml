@@ -18,8 +18,10 @@ services:
     image: homeassistant/home-assistant:latest
     depends_on:
       - swag
+    network_mode: host
     volumes:
-      - /home/adez/docker-volumes/homeassistant:/config
+      - /home/adez/docker-volumes/homeassistant/config:/config
+      - /home/adez/docker-volumes/homeassistant/media:/media
       - /var/run/docker.sock:/var/run/docker.sock
       - /etc/localtime:/etc/localtime:ro
       - /etc/letsencrypt:/certs
@@ -31,7 +33,7 @@ services:
     devices:
       - /dev/serial/by-id/usb-RFXCOM_RFXtrx433XL_DO4GXDGW-if00-port0:/dev/ttyUSB1
       - /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_AQ4MI444-if00-port0:/dev/ttyUSB0
- 
+
   appdaemon:
     container_name: appdaemon
     image: acockburn/appdaemon:latest
@@ -74,7 +76,7 @@ services:
       - swag
       restart: unless-stopped
       volumes:
-        - /home/adez/docker-volumes/duckdns/config:/config 
+        - /home/adez/docker-volumes/duckdns/config:/config
       environment:
         - PUID=1000
         - PGID=1000
@@ -144,7 +146,7 @@ services:
       - SERVERURL=$WIREGUARD_ENV_URL
       - SERVERPORT=$WIREGUARD_ENV_SERVER_PORT
       - PEERS=laptop,phone
-      - PEERDNS=auto       
+      - PEERDNS=auto
     volumes:
       - /home/adez/docker-volumes/wireguard/config:/config
       - /lib/modules:/lib/modules
