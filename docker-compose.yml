@@ -84,27 +84,27 @@ services:
         - SUBDOMAINS=$DUCKDNS_ENV_SUBDOMAINS
         - TOKEN=$DUCKDNS_ENV_TOKEN
 
-  # pihole:
-  #   container_name: pihole
-  #   image: pihole/pihole:latest
-  #   depends_on:
-  #     - swag
-  #   restart: always
-  #   ports:
-  #     - "53:53/tcp"
-  #     - "53:53/udp"
-  #     - "67:67/udp"
-  #     - "80:80/tcp"
-  #     - "443:443/tcp"
-  #   environment:
-  #     - TZ=Europe/Amsterdam
-  #     - WEBPASSWORD=$PI_HOLE_ENV_WEBPASSWORD
-  #   volumes:
-  #     - /home/adez/docker-volumes/pihole/pihole:/etc/pihole
-  #     - /home/adez/docker-volumes/pihole/dnsmasq:/etc/dnsmasq.d
-  #   dns:
-  #     - 127.0.0.1
-  #     - 8.8.8.8
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    depends_on:
+      - swag
+    restart: always
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "67:67/udp"
+      - "80:80/tcp"
+      - "443:443/tcp"
+    environment:
+      - TZ=Europe/Amsterdam
+      - WEBPASSWORD=$PI_HOLE_ENV_WEBPASSWORD
+    volumes:
+      - /home/adez/docker-volumes/pihole/pihole:/etc/pihole
+      - /home/adez/docker-volumes/pihole/dnsmasq:/etc/dnsmasq.d
+    dns:
+      - 127.0.0.1
+      - 8.8.8.8
 
   mosquitto:
     container_name: mosquitto
@@ -154,4 +154,15 @@ services:
       - 51820:51820/udp
     sysctls:
       - net.ipv4.conf.all.src_valid_mark=1
+    restart: always
+
+  grott:
+    container_name: grott
+    image: ledidobe/grott
+    ports:
+      - 5279:5279
+    volumes:
+      - /home/adez/docker-volumes/grott/grott.ini:/app/grott.ini
+    environment:
+      - TZ=Europe/Amsterdam
     restart: always
