@@ -10,8 +10,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     restart: always
     ports:
-     - 9000:9000
-     - 8000:8000
+      - 9000:9000
+      - 8000:8000
 
   home-assistant:
     container_name: home-assistant
@@ -33,6 +33,14 @@ services:
     devices:
       - /dev/serial/by-id/usb-RFXCOM_RFXtrx433XL_DO4GXDGW-if00-port0:/dev/ttyUSB1
       - /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_AQ4MI444-if00-port0:/dev/ttyUSB0
+
+  esphome-dashboard:
+    container_name: esphome
+    image: ghcr.io/esphome/esphome
+    restart: always
+    volumes:
+      - /home/adez/docker-volumes/esphome-dashboard/config:/config
+    network_mode: host
 
   appdaemon:
     container_name: appdaemon
@@ -61,28 +69,30 @@ services:
       - PGID=1000
       - PUID=1000
       - EMAIL=$SWAG_ENV_EMAIL
-      - URL=$DUCKDNS_ENV_URL
-      - SUBDOMAINS=$DUCKDNS_ENV_SUBDOMAINS
+      - URL=$SWAG_ENV_URL
+      - SUBDOMAINS=$SWAG_ENV_SUBDOMAINS
       - VALIDATION=http
       - TZ=Europe/Amsterdam
     ports:
-      - 8080:80
-      - 8443:443
+      - 81:80
+      - 4443:443
 
   duckdns:
-      container_name: duckdns
-      image: ghcr.io/linuxserver/duckdns
-      depends_on:
+    container_name: duckdns
+    image: ghcr.io/linuxserver/duckdns
+    network_mode: host
+    depends_on:
       - swag
-      restart: unless-stopped
-      volumes:
-        - /home/adez/docker-volumes/duckdns/config:/config
-      environment:
-        - PUID=1000
-        - PGID=1000
-        - TZ=Europe/Amsterdam
-        - SUBDOMAINS=$DUCKDNS_ENV_SUBDOMAINS
-        - TOKEN=$DUCKDNS_ENV_TOKEN
+    restart: unless-stopped
+    volumes:
+      - /home/adez/docker-volumes/duckdns/config:/config
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Amsterdam
+      - SUBDOMAINS=$DUCKDNS_ENV_SUBDOMAINS
+      - TOKEN=$DUCKDNS_ENV_TOKEN
+      - UPDATE_IP=both
 
   pihole:
     container_name: pihole
@@ -165,4 +175,27 @@ services:
       - /home/adez/docker-volumes/grott/grott.ini:/app/grott.ini
     environment:
       - TZ=Europe/Amsterdam
+    restart: always
+
+  unifi-controller:
+    image: lscr.io/linuxserver/unifi-controller:latest
+    container_name: unifi-controller
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Amsterdam
+      # - MEM_LIMIT=1024 #optional
+      # - MEM_STARTUP=1024 #optional
+    volumes:
+      - /home/adez/docker-volumes/unifi-controller/config:/config
+    ports:
+      - 8443:8443
+      - 3478:3478/udp
+      - 10001:10001/udp
+      - 8080:8080
+      # - 1900:1900/udp #optional
+      # - 8843:8843 #optional
+      - 8880:8880 #optional
+      # - 6789:6789 #optional
+      # - 5514:5514/udp #optional
     restart: always
