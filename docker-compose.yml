@@ -1,47 +1,5 @@
 version: '3'
 services:
-  portainer:
-    container_name: portainer
-    image: portainer/portainer-ce
-    depends_on:
-      - swag
-    volumes:
-      - /home/adez/docker-volumes/portainer:/data
-      - /var/run/docker.sock:/var/run/docker.sock
-    restart: always
-    ports:
-      - 9000:9000
-      - 8000:8000
-
-  home-assistant:
-    container_name: home-assistant
-    image: homeassistant/home-assistant:latest
-    depends_on:
-      - swag
-    network_mode: host
-    volumes:
-      - /home/adez/docker-volumes/homeassistant/config:/config
-      - /home/adez/docker-volumes/homeassistant/media:/media
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/letsencrypt:/certs
-      - /home/adez/docker-volumes/ha-openssl/openssl.cnf:/etc/ssl/openssl.cnf
-    restart: always
-    ports:
-      - 8123:8123
-      - 4199:4199
-    devices:
-      - /dev/serial/by-id/usb-RFXCOM_RFXtrx433XL_DO4GXDGW-if00-port0:/dev/ttyUSB1
-      - /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_AQ4MI444-if00-port0:/dev/ttyUSB0
-
-  esphome-dashboard:
-    container_name: esphome
-    image: ghcr.io/esphome/esphome
-    restart: always
-    volumes:
-      - /home/adez/docker-volumes/esphome-dashboard/config:/config
-    network_mode: host
-
   appdaemon:
     container_name: appdaemon
     image: acockburn/appdaemon:latest
@@ -55,27 +13,6 @@ services:
       - /home/adez/docker-volumes/appdaemon/conf:/conf
     ports:
       - 5050:5050
-
-  swag:
-    container_name: swag
-    image: ghcr.io/linuxserver/swag
-    cap_add:
-      - NET_ADMIN
-    restart: always
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /home/adez/docker-volumes/secure-web-application-gateway:/config
-    environment:
-      - PGID=1000
-      - PUID=1000
-      - EMAIL=$SWAG_ENV_EMAIL
-      - URL=$SWAG_ENV_URL
-      - SUBDOMAINS=$SWAG_ENV_SUBDOMAINS
-      - VALIDATION=http
-      - TZ=Europe/Amsterdam
-    ports:
-      - 81:80
-      - 4443:443
 
   duckdns:
     container_name: duckdns
@@ -93,6 +30,60 @@ services:
       - SUBDOMAINS=$DUCKDNS_ENV_SUBDOMAINS
       - TOKEN=$DUCKDNS_ENV_TOKEN
       - UPDATE_IP=both
+
+  esphome-dashboard:
+    container_name: esphome
+    image: ghcr.io/esphome/esphome
+    restart: always
+    volumes:
+      - /home/adez/docker-volumes/esphome-dashboard/config:/config
+    network_mode: host
+
+  grott:
+    container_name: grott
+    image: ledidobe/grott:2.8.3
+    ports:
+      - 5279:5279
+    volumes:
+      - /home/adez/docker-volumes/grott/grott.ini:/app/grott.ini
+    environment:
+      - TZ=Europe/Amsterdam
+    restart: always
+
+  home-assistant:
+    container_name: home-assistant
+    image: homeassistant/home-assistant:latest
+    depends_on:
+      - swag
+    network_mode: host
+    volumes:
+      - /home/adez/docker-volumes/homeassistant/config:/config
+      - /home/adez/docker-volumes/homeassistant/media:/media
+      - /home/adez/docker-volumes/homeassistant/openssl/openssl.cnf:/etc/ssl/openssl.cnf
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/letsencrypt:/certs
+    restart: always
+    ports:
+      - 8123:8123
+      - 4199:4199
+    devices:
+      - /dev/serial/by-id/usb-RFXCOM_RFXtrx433XL_DO4GXDGW-if00-port0:/dev/ttyUSB1
+      - /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_AQ4MI444-if00-port0:/dev/ttyUSB0
+
+  mosquitto:
+    container_name: mosquitto
+    image: eclipse-mosquitto
+    depends_on:
+      - swag
+    restart: always
+    volumes:
+      - /home/adez/docker-volumes/mosquitto/config:/mosquitto/config
+      - /home/adez/docker-volumes/mosquitto/data:/mosquitto/data
+      - /home/adez/docker-volumes/mosquitto/log:/mosquitto/log
+    ports:
+      - 1883:1883
+      - 9001:9001
 
   pihole:
     container_name: pihole
@@ -116,32 +107,79 @@ services:
       - 127.0.0.1
       - 8.8.8.8
 
-  mosquitto:
-    container_name: mosquitto
-    image: eclipse-mosquitto
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce
     depends_on:
       - swag
-    restart: always
     volumes:
-      - /home/adez/docker-volumes/mosquitto/config:/mosquitto/config
-      - /home/adez/docker-volumes/mosquitto/data:/mosquitto/data
-      - /home/adez/docker-volumes/mosquitto/log:/mosquitto/log
+      - /home/adez/docker-volumes/portainer:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: always
     ports:
-      - 1883:1883
-      - 9001:9001
+      - 9000:9000
+      - 8000:8000
 
-  zigbee2mqtt:
-    container_name: Zigbee2MQTT
-    image: koenkk/zigbee2mqtt
-    depends_on:
-      - swag
-    network_mode: host
-    devices:
-      - /dev/serial/by-id/usb-ITead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_662fa977371aec11968876e5f01c6278-if00-port0:/dev/ttyACM0
+  swag:
+    container_name: swag
+    image: ghcr.io/linuxserver/swag
+    cap_add:
+      - NET_ADMIN
     restart: always
     volumes:
-      - /home/adez/docker-volumes/zigbee2mqtt/data:/app/data
-      - /etc/localtime:/etc/locatime:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /home/adez/docker-volumes/secure-web-application-gateway:/config
+    environment:
+      - PGID=1000
+      - PUID=1000
+      - EMAIL=$SWAG_ENV_EMAIL
+      - URL=$SWAG_ENV_URL
+      - SUBDOMAINS=$SWAG_ENV_SUBDOMAINS
+      - VALIDATION=http
+      - TZ=Europe/Amsterdam
+    ports:
+      - 81:80
+      - 4443:443
+
+  unifi-db:
+    container_name: unifi-db
+    image: mongo:4.4.26
+    volumes:
+      - /home/adez/docker-volumes/unifi-db/data:/data/db
+      - /home/adez/docker-volumes/unifi-db/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    restart: always
+
+  unifi-network-application:
+    image: lscr.io/linuxserver/unifi-network-application:latest
+    depends_on:
+      - unifi-db
+    container_name: unifi-network-application
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Amsterdam
+      - MONGO_USER=$UNIFI_MONGO_USER
+      - MONGO_PASS=$UNIFI_MONGO_PASS
+      - MONGO_HOST=unifi-db
+      - MONGO_PORT=27017
+      - MONGO_DBNAME=$UNIFI_MONGO_DBNAME
+      - MEM_LIMIT=1024 #optional
+      - MEM_STARTUP=1024 #optional
+      # - MONGO_TLS= #optional
+      # - MONGO_AUTHSOURCE= #optional
+    volumes:
+      - /home/adez/docker-volumes/unifi-network-application/config:/config
+    ports:
+      - 8443:8443
+      - 3478:3478/udp
+      - 10001:10001/udp
+      - 8080:8080
+      # - 1900:1900/udp #optional
+      # - 8843:8843 #optional
+      - 8880:8880 #optional
+      # - 6789:6789 #optional
+      # - 5514:5514/udp #optional
+    restart: always
 
   wireguard:
     container_name: wireguard
@@ -155,7 +193,7 @@ services:
       - TZ=Europe/Amsterdam
       - SERVERURL=$WIREGUARD_ENV_URL
       - SERVERPORT=$WIREGUARD_ENV_SERVER_PORT
-      - PEERS=laptop,phone
+      - PEERS=laptop,phone,netflix1
       - PEERDNS=auto
     volumes:
       - /home/adez/docker-volumes/wireguard/config:/config
@@ -166,36 +204,46 @@ services:
       - net.ipv4.conf.all.src_valid_mark=1
     restart: always
 
-  grott:
-    container_name: grott
-    image: ledidobe/grott
-    ports:
-      - 5279:5279
-    volumes:
-      - /home/adez/docker-volumes/grott/grott.ini:/app/grott.ini
-    environment:
-      - TZ=Europe/Amsterdam
+  # wake words
+  openWakeWord:
+    container_name: wyoming-openWakeWord
+    image: rhasspy/wyoming-openwakeword:latest
     restart: always
+    ports:
+      - 10400:10400
+    command: --preload-model 'ok_nabu'
 
-  unifi-controller:
-    image: lscr.io/linuxserver/unifi-controller:latest
-    container_name: unifi-controller
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Amsterdam
-      # - MEM_LIMIT=1024 #optional
-      # - MEM_STARTUP=1024 #optional
-    volumes:
-      - /home/adez/docker-volumes/unifi-controller/config:/config
-    ports:
-      - 8443:8443
-      - 3478:3478/udp
-      - 10001:10001/udp
-      - 8080:8080
-      # - 1900:1900/udp #optional
-      # - 8843:8843 #optional
-      - 8880:8880 #optional
-      # - 6789:6789 #optional
-      # - 5514:5514/udp #optional
+  # Text-2-Speech
+  piper:
+    container_name: wyoming-piper
+    image: rhasspy/wyoming-piper:latest
     restart: always
+    volumes:
+      - /home/adez/docker-volumes/whyoming-piper/data:/data
+    ports:
+      - 10200:10200
+    command: --voice nl_NL-mls-medium
+
+  # Speech-2-Text
+  whisper:
+    container_name: wyoming-whisper
+    image: rhasspy/wyoming-whisper:latest
+    restart: always
+    volumes:
+      - /home/adez/docker-volumes/whyoming-whisper/data:/data
+    ports:
+      - 10300:10300
+    command: "--model base --language nl"
+
+  zigbee2mqtt:
+    container_name: Zigbee2MQTT
+    image: koenkk/zigbee2mqtt
+    depends_on:
+      - swag
+    network_mode: host
+    devices:
+      - /dev/serial/by-id/usb-ITead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_662fa977371aec11968876e5f01c6278-if00-port0:/dev/ttyACM0
+    restart: always
+    volumes:
+      - /home/adez/docker-volumes/zigbee2mqtt/data:/app/data
+      - /etc/localtime:/etc/locatime:ro
